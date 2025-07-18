@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skillstack/providers/skill_providers.dart';
-import 'package:flutter_animate/flutter_animate.dart'; // <--- ADDED THIS IMPORT
+import 'package:flutter_animate/flutter_animate.dart'; // <<< THIS IMPORT IS THE KEY
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -25,7 +25,8 @@ class StatsScreen extends ConsumerWidget {
           ? const Center(child: Text('Add some skills to see your stats!'))
           : ListView(
               padding: const EdgeInsets.all(16),
-              children: [
+              // The .animate() call on the list of children will now work correctly
+              children: <Widget>[
                 _StatCard(
                   icon: Icons.stacked_line_chart,
                   title: 'Total Skills',
@@ -51,8 +52,11 @@ class StatsScreen extends ConsumerWidget {
                   color: colorScheme.tertiary,
                 ),
                 const SizedBox(height: 24),
-                // This `.p(8)` will now be recognized
-                Text('Category Breakdown', style: textTheme.headlineSmall).p(8), 
+                // REPLACED '.p(8)' with a standard Padding widget for robustness
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Category Breakdown', style: textTheme.headlineSmall),
+                ),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -72,7 +76,6 @@ class StatsScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                // This `.animate()` on a List will now be recognized
               ].animate(interval: 100.ms).fade(duration: 500.ms).slideY(begin: 0.5),
             ),
     );
