@@ -1,0 +1,62 @@
+# .github/workflows/build_android.yml
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main  # Triggers the workflow on push events to the main branch
+  pull_request:
+    branches:
+      - main  # Also triggers on pull requests to main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.5' # Using a recent, specific stable version
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      # --- THIS IS THE NEWLY ADDED, CRUCIAL STEP ---
+      - name: Generate Isar code and other generated files
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+      
+      - name: Configure Android files
+        run: |
+          # Add necessary permissions to AndroidManifest.xml
+          # Using 'sed -i' to insert lines before the <application> tag
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>' android/app/src/main/AndroidManifest.xml
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />' android/app/src/main/AndroidManifest.xml
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />' android/app/src/main/AndroidManifest.xml
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />' android/app/src/main/AndroidManifest.xml
+
+          # Change app name in AndroidManifest.xml
+          sed -i 's/android:label="skillstack"/android:label="SkillStack"/' android/app/src/main/AndroidManifest.xml
+          
+          # Update package name in the app-level build.gradle
+          sed -i "s/applicationId \".*\"/applicationId \"com.sleepy.skillstack\"/" android/app/build.gradle
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
