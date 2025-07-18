@@ -4,10 +4,10 @@ name: Build Android APK
 on:
   push:
     branches:
-      - main  # Triggers the workflow on push events to the main branch
+      - main
   pull_request:
     branches:
-      - main  # Also triggers on pull requests to main
+      - main
 
 jobs:
   build:
@@ -26,31 +26,33 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.5' # Using a recent, specific stable version
+          flutter-version: '3.19.5'
           channel: 'stable'
           cache: true
 
       - name: Get Flutter dependencies
         run: flutter pub get
 
-      # --- THIS IS THE NEWLY ADDED, CRUCIAL STEP ---
+      # --- THIS IS THE CRITICAL FIX ---
+      # Generate the platform-specific project files (like the android/ folder)
+      # This command populates the missing android folder and sets the package name correctly.
+      - name: Create platform-specific files
+        run: flutter create . --platforms=android --org com.sleepy.skillstack
+
       - name: Generate Isar code and other generated files
         run: flutter pub run build_runner build --delete-conflicting-outputs
       
-      - name: Configure Android files
+      # Now we can safely modify the AndroidManifest, because it was created in the step above.
+      - name: Configure AndroidManifest.xml
         run: |
-          # Add necessary permissions to AndroidManifest.xml
-          # Using 'sed -i' to insert lines before the <application> tag
+          # Add necessary permissions before the <application> tag
           sed -i '/<application/i \    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>' android/app/src/main/AndroidManifest.xml
           sed -i '/<application/i \    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />' android/app/src/main/AndroidManifest.xml
           sed -i '/<application/i \    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />' android/app/src/main/AndroidManifest.xml
           sed -i '/<application/i \    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />' android/app/src/main/AndroidManifest.xml
 
-          # Change app name in AndroidManifest.xml
+          # Change the visible app name (label)
           sed -i 's/android:label="skillstack"/android:label="SkillStack"/' android/app/src/main/AndroidManifest.xml
-          
-          # Update package name in the app-level build.gradle
-          sed -i "s/applicationId \".*\"/applicationId \"com.sleepy.skillstack\"/" android/app/build.gradle
 
       - name: Build release APK
         run: flutter build apk --release
