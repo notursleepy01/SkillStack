@@ -1,11 +1,12 @@
 // lib/core/theme/app_theme.dart
+import 'package:dynamic_color/dynamic_color.dart'; // <--- ADDED THIS IMPORT
 import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData lightTheme(ColorScheme? lightDynamic) {
     ColorScheme lightColorScheme;
     if (lightDynamic != null) {
-      lightColorScheme = lightDynamic.harmonized();
+      lightColorScheme = lightDynamic.harmonized(); // This will now be recognized
     } else {
       lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple);
     }
@@ -23,7 +24,7 @@ class AppTheme {
   static ThemeData darkTheme(ColorScheme? darkDynamic) {
     ColorScheme darkColorScheme;
     if (darkDynamic != null) {
-      darkColorScheme = darkDynamic.harmonized();
+      darkColorScheme = darkDynamic.harmonized(); // This will now be recognized
     } else {
       darkColorScheme = ColorScheme.fromSeed(
         seedColor: Colors.deepPurple,

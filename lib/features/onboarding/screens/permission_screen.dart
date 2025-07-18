@@ -9,10 +9,8 @@ class PermissionScreen extends StatelessWidget {
   const PermissionScreen({super.key});
 
   Future<void> _requestAndContinue(BuildContext context) async {
-    // Request permissions. The user can deny them, but we still proceed.
     await [
       Permission.notification,
-      // For Android 13+, photos permission is needed for image_picker
       Permission.photos, 
     ].request();
 
@@ -65,7 +63,8 @@ class PermissionScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text('Grant Permissions & Start'),
-              ).animate().slideInUp(delay: 300.ms, duration: 500.ms),
+                // CORRECTED LINE: Changed slideInUp to slideY and simplified params
+              ).animate().slideY(delay: 300.ms, duration: 500.ms, begin: 0.5),
             ],
           ),
         ),

@@ -14,9 +14,8 @@ final skillsStreamProvider = StreamProvider<List<Skill>>((ref) {
 
 // 3. Provider to get a single skill and its related data (like notes) by ID
 final skillByIdProvider = StreamProvider.autoDispose.family<Skill?, int>((ref, id) {
-  final dbService = ref.watch(databaseProvider);
-  // Using watch() on a single object for real-time updates on the detail screen
-  return dbService.isar.skills.watchObject(id, fireImmediately: true);
+  // CORRECTED LINE: Accessing static member 'isar' via the class name.
+  return DatabaseService.isar.skills.watchObject(id, fireImmediately: true);
 });
 
 // 4. Provider for calculating statistics

@@ -1,4 +1,5 @@
 // lib/main.dart
+import 'package:dynamic_color/dynamic_color.dart'; // <--- ADDED THIS IMPORT
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,10 +9,8 @@ import 'package:skillstack/data/services/notification_service.dart';
 import 'package:skillstack/core/theme/app_theme.dart';
 
 Future<void> main() async {
-  // Ensure all bindings are initialized before running the app.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize services concurrently for faster startup.
   final (prefs, _, _,) = await (
     SharedPreferences.getInstance(),
     DatabaseService.init(),
@@ -29,16 +28,13 @@ Future<void> main() async {
 
 class SkillStackApp extends ConsumerWidget {
   final bool isFirstLaunch;
-
   const SkillStackApp({super.key, required this.isFirstLaunch});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the router provider, passing the first-launch flag.
     final router = ref.watch(routerProvider(isFirstLaunch));
     
-    // DynamicColorBuilder provides Material You colors from the user's wallpaper.
-    return DynamicColorBuilder(
+    return DynamicColorBuilder( // This will now be recognized
       builder: (lightDynamic, darkDynamic) {
         return MaterialApp.router(
           title: 'SkillStack',

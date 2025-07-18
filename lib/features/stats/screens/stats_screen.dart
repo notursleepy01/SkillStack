@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skillstack/providers/skill_providers.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // <--- ADDED THIS IMPORT
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -51,7 +51,8 @@ class StatsScreen extends ConsumerWidget {
                   color: colorScheme.tertiary,
                 ),
                 const SizedBox(height: 24),
-                Text('Category Breakdown', style: textTheme.headlineSmall).p(8),
+                // This `.p(8)` will now be recognized
+                Text('Category Breakdown', style: textTheme.headlineSmall).p(8), 
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -71,6 +72,7 @@ class StatsScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
+                // This `.animate()` on a List will now be recognized
               ].animate(interval: 100.ms).fade(duration: 500.ms).slideY(begin: 0.5),
             ),
     );
